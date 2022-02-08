@@ -622,3 +622,34 @@ paths:
                 $ref: "#/components/schemas/Auth"
         403:
           description: Incorrect e-mail or password
+  /signup:
+    post:
+      tags:
+        - Sign Up
+      security:
+        []
+      summary: Sign up
+      description: Register a user and returns a JWT-token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                email:
+                  type: string
+                  description: E-mail
+                password:
+                  type: string
+                  description: Password
+      responses:
+        200:
+          description: Successful register.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Auth"
+        403:
+        description: Incorrect e-mail or password
