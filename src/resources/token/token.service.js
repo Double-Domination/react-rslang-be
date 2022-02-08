@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
 const { AUTHENTICATION_ERROR } = require('../../errors/appErrors');
 
+// const tokenModel = require('../token/token.model');
+
 const tokenRepo = require('./token.db.repository');
 const {
   JWT_SECRET_KEY,
@@ -19,12 +21,14 @@ const refresh = async (userId, tokenId) => {
   return getTokens(userId);
 };
 
+// tokens generation (acesss refresh)
 const getTokens = async userId => {
   const token = jwt.sign({ id: userId }, JWT_SECRET_KEY, {
     expiresIn: JWT_EXPIRE_TIME
   });
 
   const tokenId = uuid();
+
   const refreshToken = jwt.sign(
     { id: userId, tokenId },
     JWT_REFRESH_SECRET_KEY,
@@ -42,6 +46,7 @@ const getTokens = async userId => {
   return { token, refreshToken };
 };
 
+// find and update db entity
 const upsert = token => tokenRepo.upsert(token);
 
-module.exports = { refresh, getTokens, upsert };
+module.exports = { getTokens, refresh, upsert };

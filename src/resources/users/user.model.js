@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { addMethods } = require('../../utils/toResponse');
 const Schema = mongoose.Schema;
+// const Model = mongoose.Model;
 
-const User = new Schema(
+const UserSchema = new Schema(
   {
     name: String,
     email: {
@@ -16,17 +17,19 @@ const User = new Schema(
       required: true,
       trim: true,
       minlength: 8
-    }
+    },
+    isConfirmed: { type: Boolean, default: false },
+    confirmationLink: { type: String }
   },
   { collection: 'users' }
 );
 
-User.pre('save', async function preSave(next) {
+UserSchema.pre('save', async function preSave(next) {
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-User.pre('findOneAndUpdate', async function preUpdate(next) {
+UserSchema.pre('findOneAndUpdate', async function preUpdate(next) {
   if (this._update.$set.password) {
     this._update.$set.password = await bcrypt.hash(
       this._update.$set.password,
@@ -37,6 +40,6 @@ User.pre('findOneAndUpdate', async function preUpdate(next) {
   next();
 });
 
-addMethods(User);
+addMethods(UserSchema);
 
-module.exports = mongoose.model('users', User);
+module.exports = mongoose.model('users', UserSchema);

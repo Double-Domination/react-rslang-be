@@ -7,6 +7,7 @@ const YAML = require('yamljs');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 require('express-async-errors');
 const { NOT_FOUND } = require('http-status-codes');
 
@@ -26,9 +27,13 @@ const { userIdValidator } = require('./utils/validation/validator');
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
+// custom router
+const registrationRouter = require('./resources/authentication/registration.router');
+
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/files', express.static(path.join(__dirname, '../files')));
 
@@ -58,6 +63,8 @@ app.use('/words', wordRouter);
 app.use('/signin', signinRouter);
 
 app.use('/users', userRouter);
+
+app.use('/', registrationRouter);
 
 userRouter.use('/:id/tokens', userIdValidator, userTokenRouter);
 
